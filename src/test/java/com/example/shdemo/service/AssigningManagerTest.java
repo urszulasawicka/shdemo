@@ -38,21 +38,21 @@ public class AssigningManagerTest {
 	private final static int ISBN_1 = 43;
 	private final static Date DATE_1 = new Date();
 	private final static int TEAMNUMBER_1 = 189;
-	
+
 	private final static String NAME_2 = "Akta malborskie";
 	private final static String AUTHOR_2 = "Kanclerz Namiestnik";
 	private final static int ISBN_2 = 67;
 	private final static int DATE_2 = 1832;
-	
+
 	private final static String NAME_3 = "Odczyty staromodne";
 	private final static String AUTHOR_3 = "Kowalska";
 	private final static int ISBN_3 = 89;
 	private final static int DATE_3 = 1788;
-	
+
 	private final static String NAMEARCHIVE_1 = "Centrum";
 	private final static int TEAMNUMBERARCHIVE_1 = 189;
 	private final static String PHONEARCHIVE_1 = "(52) 339-54-01";
-	
+
 	private final static String NAMEARCHIVE_2 = "Oddział";
 	private final static int TEAMNUMBERARCHIVE_2 = 178;
 	private final static String PHONEARCHIVE_2 = "(78) 888-99-45";
@@ -67,7 +67,7 @@ public class AssigningManagerTest {
 				archiveManager.deleteArchive(archive);
 			}
 		}
-		
+
 		Archive archive = new Archive();
 		archive.setName(NAMEARCHIVE_1);
 		archive.setTeamNumber(TEAMNUMBERARCHIVE_1);
@@ -75,7 +75,8 @@ public class AssigningManagerTest {
 
 		archiveManager.addArchive(archive);
 
-		Archive retrievedArchive = archiveManager.findArchiveByTeamNumber(TEAMNUMBERARCHIVE_1);
+		Archive retrievedArchive = archiveManager
+				.findArchiveByTeamNumber(TEAMNUMBERARCHIVE_1);
 
 		List<Resource> retrievedResources = resourceManager.getAllResources();
 
@@ -84,7 +85,7 @@ public class AssigningManagerTest {
 				resourceManager.deleteResource(resource);
 			}
 		}
-		
+
 		Resource resource = new Resource();
 		resource.setName(NAME_1);
 		resource.setAuthor(AUTHOR_1);
@@ -95,7 +96,8 @@ public class AssigningManagerTest {
 		Long resourceId = resourceManager.addResource(resource);
 
 		assigningManager.assignResource(retrievedArchive.getId(), resourceId);
-		List<Resource> resourcesOfArchive = archiveManager.getResourcesOfArchive(retrievedArchive);
+		List<Resource> resourcesOfArchive = archiveManager
+				.getResourcesOfArchive(retrievedArchive);
 		assertEquals(1, resourcesOfArchive.size());
 		assertEquals(NAME_1, resourcesOfArchive.get(0).getName());
 		assertEquals(AUTHOR_1, resourcesOfArchive.get(0).getAuthor());
@@ -103,8 +105,7 @@ public class AssigningManagerTest {
 		/*Date today;
 		try {
 			today = dfm.parse(dfm.format(DATE_1));*/
-			assertEquals(DATE_1, resourcesOfArchive.get(0)
-					.getIntroductionDate());
+			assertEquals(DATE_1, resourcesOfArchive.get(0).getIntroductionDate());
 		/*} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -112,9 +113,71 @@ public class AssigningManagerTest {
 		assertEquals(true, resourcesOfArchive.get(0).getAssigned());
 	}
 
-	// @Test -
-	public void disposeCarCheck() {
-		// Do it yourself
+	@Test
+	public void disposeResourceCheck() {
+		List<Archive> retrievedArchives = archiveManager.getAllArchives();
+		for (Archive archive : retrievedArchives) {
+			if (archive.getTeamNumber() == TEAMNUMBER_1) {
+				archiveManager.deleteArchive(archive);
+			}
+		}
+
+		Archive archive = new Archive();
+		archive.setName(NAMEARCHIVE_1);
+		archive.setTeamNumber(TEAMNUMBERARCHIVE_1);
+		archive.setPhone(PHONEARCHIVE_1);
+
+		archiveManager.addArchive(archive);
+
+		Archive retrievedArchive = archiveManager
+				.findArchiveByTeamNumber(TEAMNUMBERARCHIVE_1);
+
+		List<Resource> retrievedResources = resourceManager.getAllResources();
+
+		for (Resource resource : retrievedResources) {
+			if (resource.getIsbn() == ISBN_1) {
+				resourceManager.deleteResource(resource);
+			}
+		}
+
+		Resource resource = new Resource();
+		resource.setName(NAME_1);
+		resource.setAuthor(AUTHOR_1);
+		resource.setIsbn(ISBN_1);
+		resource.setIntroductionDate(DATE_1);
+		resource.setAssigned(false);
+
+		Long resourceId = resourceManager.addResource(resource);
+
+		assigningManager.assignResource(retrievedArchive.getId(), resourceId);
+		List<Resource> resourcesOfArchive = archiveManager
+				.getResourcesOfArchive(retrievedArchive);
+		assertEquals(1, resourcesOfArchive.size());
+		/*Date today;
+		try {
+			today = dfm.parse(dfm.format(DATE_1));*/
+			assertEquals(NAME_1, resourcesOfArchive.get(0).getName());
+			assertEquals(AUTHOR_1, resourcesOfArchive.get(0).getAuthor());
+			assertEquals(ISBN_1, resourcesOfArchive.get(0).getIsbn());
+			assertEquals(DATE_1, resourcesOfArchive.get(0).getIntroductionDate());
+			assertEquals(true, resourcesOfArchive.get(0).getAssigned());
+			
+			assigningManager.disposeResource(retrievedArchive, resource);
+			
+			resourcesOfArchive = archiveManager
+					.getResourcesOfArchive(retrievedArchive);
+			assertEquals(0, resourcesOfArchive.size());
+			
+			Resource disposedResource = resourceManager
+					.findResourceByIsbn(ISBN_1);
+			assertEquals(NAME_1, disposedResource.getName());
+			assertEquals(AUTHOR_1, disposedResource.getAuthor());
+			assertEquals(ISBN_1, disposedResource.getIsbn());
+			assertEquals(DATE_1, disposedResource.getIntroductionDate());
+			assertEquals(false, disposedResource.getAssigned());
+		/*} catch (ParseException e) {
+			e.printStackTrace();
+		}*/
 	}
 
 }
