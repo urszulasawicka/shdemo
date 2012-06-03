@@ -55,4 +55,9 @@ public class ResourceManager {
 	public Resource findResourceById(Long id) {
 		return (Resource) sessionFactory.getCurrentSession().get(Resource.class, id);
 	}
+	
+	public int countResource(int isbn) {
+		List<Resource> listResourceBy = sessionFactory.getCurrentSession().getNamedQuery("resource.byIsbn").setInteger("isbn", isbn).list();
+		return listResourceBy.size();
+	}
 }

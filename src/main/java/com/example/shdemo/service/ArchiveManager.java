@@ -60,6 +60,10 @@ public class ArchiveManager {
 	public Archive findArchiveByTeamNumber(int teamNumber) {
 		return (Archive) sessionFactory.getCurrentSession().getNamedQuery("archive.byTeamNumber").setInteger("teamNumber", teamNumber).uniqueResult();
 	}
+	public int countArchive(int teamNumber) {
+		List<Archive> listArchiveBy = sessionFactory.getCurrentSession().getNamedQuery("archive.byTeamNumber").setInteger("teamNumber", teamNumber).list();
+		return listArchiveBy.size();
+	}
 	
 	public List<Resource> getResourcesOfArchive(Archive archive) {
 		archive =(Archive) sessionFactory.getCurrentSession().get(Archive.class,
