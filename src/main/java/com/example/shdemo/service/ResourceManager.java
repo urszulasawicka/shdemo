@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.shdemo.domain.Archive;
+import com.example.shdemo.domain.Car;
 import com.example.shdemo.domain.Resource;
 
 @Component
@@ -37,7 +38,7 @@ public class ResourceManager {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Archive> getAllResources(){
+	public List<Resource> getAllResources(){
 		return sessionFactory.getCurrentSession().getNamedQuery("resource.notAssigned").list();
 	}
 
@@ -49,5 +50,9 @@ public class ResourceManager {
 	
 	public Resource findResourceByIsbn(int isbn) {
 		return (Resource) sessionFactory.getCurrentSession().getNamedQuery("resource.byIsbn").setInteger("isbn", isbn).uniqueResult();
+	}
+	
+	public Resource findResourceById(Long id) {
+		return (Resource) sessionFactory.getCurrentSession().get(Resource.class, id);
 	}
 }
