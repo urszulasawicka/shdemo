@@ -32,6 +32,7 @@ public class ResourceManager {
 		resource.setId(null);
 		return (Long) sessionFactory.getCurrentSession().save(resource);
 	}
+	@SuppressWarnings("unused")
 	public Archive deleteResourceFromList(List<Archive> listArchive, long id1){
 		Archive archiveOwner = new Archive();
 		Resource toDelete = new Resource();

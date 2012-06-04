@@ -42,7 +42,7 @@ public class AssigningManagerTest {
 	private final static String NAME_2 = "Akta malborskie";
 	private final static String AUTHOR_2 = "Kanclerz Namiestnik";
 	private final static int ISBN_2 = 67;
-	private final static int DATE_2 = 1832;
+	private final static Date DATE_2 = new Date();
 
 	private final static String NAME_3 = "Odczyty staromodne";
 	private final static String AUTHOR_3 = "Kowalska";
@@ -179,5 +179,43 @@ public class AssigningManagerTest {
 			e.printStackTrace();
 		}*/
 	}
+	
+	@Test
+	public void countResourcesForArchivesCheck() {
+		
+		Archive archive = new Archive();
+		archive.setName(NAMEARCHIVE_1);
+		archive.setTeamNumber(TEAMNUMBERARCHIVE_1);
+		archive.setPhone(PHONEARCHIVE_1);
 
+		archiveManager.addArchive(archive);
+
+		Archive retrievedArchive = archiveManager
+				.findArchiveByTeamNumber(TEAMNUMBERARCHIVE_1);
+		
+		Resource resource = new Resource();
+		resource.setName(NAME_1);
+		resource.setAuthor(AUTHOR_1);
+		resource.setIsbn(ISBN_1);
+		resource.setIntroductionDate(DATE_1);
+		resource.setAssigned(false);
+
+		Long resourceId = resourceManager.addResource(resource);
+		
+		Resource resource2 = new Resource();
+		resource2.setName(NAME_2);
+		resource2.setAuthor(AUTHOR_2);
+		resource2.setIsbn(ISBN_2);
+		resource2.setIntroductionDate(DATE_2);
+		resource2.setAssigned(false);
+
+		Long resourceId2 = resourceManager.addResource(resource2);
+		assigningManager.assignResource(retrievedArchive.getId(), resourceId);
+		assigningManager.assignResource(retrievedArchive.getId(), resourceId2);
+		List<Archive> retrievedArchives = archiveManager.getAllArchives();
+		Archive richestArchive = assigningManager.countResourcesForArchives(retrievedArchives);
+		assertEquals(NAMEARCHIVE_1, richestArchive.getName());
+		assertEquals(TEAMNUMBERARCHIVE_1, richestArchive.getTeamNumber());
+		assertEquals(PHONEARCHIVE_1, richestArchive.getPhone());
+	}
 }

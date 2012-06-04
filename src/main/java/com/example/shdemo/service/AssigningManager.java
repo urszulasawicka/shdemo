@@ -63,4 +63,18 @@ public class AssigningManager {
 	public Resource findResourceById(Long id) {
 		return (Resource) sessionFactory.getCurrentSession().get(Resource.class, id);
 	}
+	
+	public Archive countResourcesForArchives(List<Archive> listArchive){
+		Archive archiveBiggest = new Archive();
+		int count = 0, tmpCount = 0;
+		for(Archive a : listArchive){
+				List<Resource> listResource = a.getResources();
+				tmpCount = listResource.size();
+				if(tmpCount > count){
+					count = tmpCount;
+					archiveBiggest = a;
+				}
+		}
+		return archiveBiggest;
+	}
 }
