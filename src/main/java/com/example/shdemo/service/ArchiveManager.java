@@ -26,9 +26,9 @@ public class ArchiveManager {
 		this.sessionFactory = sessionFactory;
 	}
 	
-	public void addArchive(Archive archive) {
+	public Long addArchive(Archive archive) {
 		archive.setId(null);
-		sessionFactory.getCurrentSession().persist(archive);
+		return (Long) sessionFactory.getCurrentSession().save(archive);
 	}
 
 	public void deleteArchive(Archive archive) {
@@ -39,12 +39,6 @@ public class ArchiveManager {
 			sessionFactory.getCurrentSession().update(resource);
 		}
 		sessionFactory.getCurrentSession().delete(archive);
-	}
-	
-	public void deleteArchive1(Archive archive) {
-		Archive tmpArchive = (Archive) sessionFactory.getCurrentSession().get(Archive.class,
-				archive.getId());
-		sessionFactory.getCurrentSession().delete(tmpArchive);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -73,10 +67,13 @@ public class ArchiveManager {
 		return resources;
 	}
 	
-	public void updateArchive(Long archiveId, Archive a) {
-		Archive nA = new Archive(archiveId, a.getName(),
-				 a.getTeamNumber(), a.getPhone());		
-		sessionFactory.getCurrentSession().saveOrUpdate(nA);
+	public void updateArchive(Archive archive) {
+		Archive tmpArchive = (Archive) sessionFactory.getCurrentSession().get(Archive.class,
+				archive.getId());
+		tmpArchive.setName(archive.getName());
+		tmpArchive.setPhone(archive.getPhone());
+		tmpArchive.setTeamNumber(archive.getTeamNumber());
+		sessionFactory.getCurrentSession().saveOrUpdate(tmpArchive);
 	}
 
 }

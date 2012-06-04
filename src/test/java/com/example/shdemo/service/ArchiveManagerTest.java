@@ -51,7 +51,7 @@ public class ArchiveManagerTest {
 		archive.setTeamNumber(TEAMNUMBER_1);
 		archive.setPhone(PHONE_1);
 
-		archiveManager.addArchive(archive);
+		Long id = archiveManager.addArchive(archive);
 
 		Archive retrievedArchive = archiveManager.findArchiveByTeamNumber(TEAMNUMBER_1);
 
@@ -81,8 +81,8 @@ public class ArchiveManagerTest {
 		archive2.setTeamNumber(TEAMNUMBER_2);
 		archive2.setPhone(PHONE_2);
 		
-		archiveManager.addArchive(archive1);
-		archiveManager.addArchive(archive2);
+		Long id1= archiveManager.addArchive(archive1);
+		Long id2 = archiveManager.addArchive(archive2);
 		
 		Archive retrievedArchive1 = archiveManager.findArchiveByTeamNumber(TEAMNUMBER_1);
 		Archive retrievedArchive2 = archiveManager.findArchiveByTeamNumber(TEAMNUMBER_2);
@@ -103,5 +103,62 @@ public class ArchiveManagerTest {
 		
 		assertEquals(0, count1);
 		assertEquals(0, count2);
+	}
+	
+	@Test
+	public void updateArchiveCheck() {
+
+		List<Archive> retrievedArchives = archiveManager.getAllArchives();
+
+		for (Archive archive : retrievedArchives) {
+			if (archive.getTeamNumber() == TEAMNUMBER_1 || archive.getTeamNumber() == TEAMNUMBER_2) {
+				archiveManager.deleteArchive(archive);
+			}
+		}
+
+		Archive archive1 = new Archive();
+		archive1.setName(NAME_1);
+		archive1.setTeamNumber(TEAMNUMBER_1);
+		archive1.setPhone(PHONE_1);
+
+		Archive archive2 = new Archive();
+		archive2.setName(NAME_2);
+		archive2.setTeamNumber(TEAMNUMBER_2);
+		archive2.setPhone(PHONE_2);
+		
+		Long id1 = archiveManager.addArchive(archive1);
+		Long id2 = archiveManager.addArchive(archive2);
+		
+		Archive retrievedArchive1 = archiveManager.findArchiveByTeamNumber(TEAMNUMBER_1);
+		Archive retrievedArchive2 = archiveManager.findArchiveByTeamNumber(TEAMNUMBER_2);
+		
+		assertEquals(NAME_1, retrievedArchive1.getName());
+		assertEquals(TEAMNUMBER_1, retrievedArchive1.getTeamNumber());
+		assertEquals(PHONE_1, retrievedArchive1.getPhone());
+		
+		assertEquals(NAME_2, retrievedArchive2.getName());
+		assertEquals(TEAMNUMBER_2, retrievedArchive2.getTeamNumber());
+		assertEquals(PHONE_2, retrievedArchive2.getPhone());
+		
+		Archive archiveN1 = new Archive();
+		archiveN1.setId(id1);
+		archiveN1.setName(NAME_3);
+		archiveN1.setTeamNumber(TEAMNUMBER_1);
+		archiveN1.setPhone(PHONE_3);
+		
+		Archive archiveN2 = new Archive();
+		archiveN2.setId(id2);
+		archiveN2.setName(NAME_1);
+		archiveN2.setTeamNumber(TEAMNUMBER_2);
+		archiveN2.setPhone(PHONE_1);
+		
+		archiveManager.updateArchive(archiveN1);
+		int count1 = archiveManager.countArchive(TEAMNUMBER_1);
+		
+		archiveManager.updateArchive(archiveN2);
+		int count2 = archiveManager.countArchive(TEAMNUMBER_2);
+		
+		assertEquals(1, count1);
+		assertEquals(1, count2);
 	}
 }

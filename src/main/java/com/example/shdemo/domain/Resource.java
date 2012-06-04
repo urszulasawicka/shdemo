@@ -15,6 +15,7 @@ import javax.persistence.TemporalType;
 @NamedQueries({
 	@NamedQuery(name = "resource.notAssigned", query = "Select r from Resource r where r.assigned = false"),
 	@NamedQuery(name = "resource.byIsbn", query = "Select r from Resource r where r.isbn = :isbn")
+	//@NamedQuery(name = "archive.byResource", query = "Select a from Archive a JOIN Resource r ON r.id == a.id where r.name = :name")
 })
 public class Resource {
 

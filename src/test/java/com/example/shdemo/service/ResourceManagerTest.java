@@ -24,12 +24,15 @@ public class ResourceManagerTest {
 
 	@Autowired
 	ResourceManager resourceManager;
+	@Autowired
+	ArchiveManager archiveManager;
+	@Autowired
+	AssigningManager assigningManager;
 	
 	private final static String NAME_1 = "Księgi ziemskie";
 	private final static String AUTHOR_1 = "Przasnysiensia";
 	private final static int ISBN_1 = 43;
 	private final static Date DATE_1 = new Date();
-	private final static int TEAMNUMBER_1 = 189;
 	
 	private final static String NAME_2 = "Akta malborskie";
 	private final static String AUTHOR_2 = "Kanclerz Namiestnik";
@@ -39,7 +42,6 @@ public class ResourceManagerTest {
 	private final static String NAME_3 = "Odczyty staromodne";
 	private final static String AUTHOR_3 = "Kowalska";
 	private final static int ISBN_3 = 89;
-	private final static int DATE_3 = 1788;
 	
 	private final static String NAMEARCHIVE_1 = "Centrum";
 	private final static int TEAMNUMBERARCHIVE_1 = 189;
@@ -81,6 +83,19 @@ public class ResourceManagerTest {
 			}
 		}
 
+		Archive archive1 = new Archive();
+		archive1.setName(NAMEARCHIVE_1);
+		archive1.setTeamNumber(TEAMNUMBERARCHIVE_1);
+		archive1.setPhone(PHONEARCHIVE_1);
+		
+		Long archiveId1 = archiveManager.addArchive(archive1);
+		
+		Archive retrievedArchive1 = archiveManager.findArchiveByTeamNumber(TEAMNUMBERARCHIVE_1);
+		
+		assertEquals(NAMEARCHIVE_1, retrievedArchive1.getName());
+		assertEquals(TEAMNUMBERARCHIVE_1, retrievedArchive1.getTeamNumber());
+		assertEquals(PHONEARCHIVE_1, retrievedArchive1.getPhone());
+		
 		Resource resource1 = new Resource();
 		resource1.setName(NAME_1);
 		resource1.setAuthor(AUTHOR_1);
@@ -100,7 +115,6 @@ public class ResourceManagerTest {
 		
 		Resource retrievedResource1 = resourceManager.findResourceById(id1);
 		Resource retrievedResource2 = resourceManager.findResourceById(id2);
-		
 		assertEquals(NAME_1, retrievedResource1.getName());
 		assertEquals(AUTHOR_1, retrievedResource1.getAuthor());
 		assertEquals(ISBN_1, retrievedResource1.getIsbn());
@@ -112,14 +126,116 @@ public class ResourceManagerTest {
 		assertEquals(ISBN_2, retrievedResource2.getIsbn());
 		assertEquals(DATE_2, retrievedResource2.getIntroductionDate());
 		assertEquals(false, retrievedResource2.getAssigned());
-		
+
+		assigningManager.assignResource(archiveId1, id1);
+		List<Archive> listArchive = archiveManager.getAllArchives();
+		resourceManager.deleteResourceFromList(listArchive, id1);
 		resourceManager.deleteResource(resource1);
 		int count1 = resourceManager.countResource(ISBN_1);
 		
+		resourceManager.deleteResourceFromList(listArchive, id2);
 		resourceManager.deleteResource(resource2);
 		int count2 = resourceManager.countResource(ISBN_2);
 		
 		assertEquals(0, count1);
 		assertEquals(0, count2);
+	}
+	//@Test
+	public void updateResourceCheck() {
+
+		List<Resource> retrievedResources = resourceManager.getAllResources();
+
+		for (Resource resource : retrievedResources) {
+			if (resource.getIsbn() == ISBN_1 || resource.getIsbn() == ISBN_2) {
+				resourceManager.deleteResource(resource);
+			}
+		}
+
+		Archive archive1 = new Archive();
+		archive1.setName(NAMEARCHIVE_1);
+		archive1.setTeamNumber(TEAMNUMBERARCHIVE_1);
+		archive1.setPhone(PHONEARCHIVE_1);
+
+		Archive archive2 = new Archive();
+		archive2.setName(NAMEARCHIVE_2);
+		archive2.setTeamNumber(TEAMNUMBERARCHIVE_2);
+		archive2.setPhone(PHONEARCHIVE_2);
+		
+		Resource resource1 = new Resource();
+		resource1.setName(NAME_1);
+		resource1.setAuthor(AUTHOR_1);
+		resource1.setIsbn(ISBN_1);
+		resource1.setIntroductionDate(DATE_1);
+		resource1.setAssigned(false);
+
+		Resource resource2 = new Resource();
+		resource2.setName(NAME_2);
+		resource2.setAuthor(AUTHOR_2);
+		resource2.setIsbn(ISBN_2);
+		resource2.setIntroductionDate(DATE_2);
+		resource2.setAssigned(false);
+		
+		List<Archive> retrievedArchives = archiveManager.getAllArchives();
+
+		for (Archive archive : retrievedArchives) {
+			if (archive.getTeamNumber() == TEAMNUMBERARCHIVE_1 || archive.getTeamNumber() == TEAMNUMBERARCHIVE_2) {
+				archiveManager.deleteArchive(archive);
+			}
+		}
+		
+		Long archiveId1 = archiveManager.addArchive(archive1);
+		Long archiveId2 = archiveManager.addArchive(archive2);
+		
+		Archive retrievedArchive1 = archiveManager.findArchiveByTeamNumber(TEAMNUMBERARCHIVE_1);
+		Archive retrievedArchive2 = archiveManager.findArchiveByTeamNumber(TEAMNUMBERARCHIVE_2);
+		
+		assertEquals(NAMEARCHIVE_1, retrievedArchive1.getName());
+		assertEquals(TEAMNUMBERARCHIVE_1, retrievedArchive1.getTeamNumber());
+		assertEquals(PHONEARCHIVE_1, retrievedArchive1.getPhone());
+		
+		assertEquals(NAMEARCHIVE_2, retrievedArchive2.getName());
+		assertEquals(TEAMNUMBERARCHIVE_2, retrievedArchive2.getTeamNumber());
+		assertEquals(PHONEARCHIVE_2, retrievedArchive2.getPhone());
+		
+		Long resourceId1 = resourceManager.addResource(resource1);
+
+		Resource retrievedResource1 = resourceManager.findResourceById(resourceId1);
+		assertEquals(NAME_1, retrievedResource1.getName());
+		assertEquals(AUTHOR_1, retrievedResource1.getAuthor());
+		assertEquals(ISBN_1, retrievedResource1.getIsbn());
+		assertEquals(DATE_1, retrievedResource1.getIntroductionDate());
+		assertEquals(false, retrievedResource1.getAssigned());
+		
+		Long resourceId2 = resourceManager.addResource(resource2);
+
+		Resource retrievedResource2 = resourceManager.findResourceById(resourceId2);
+		assertEquals(NAME_2, retrievedResource2.getName());
+		assertEquals(AUTHOR_2, retrievedResource2.getAuthor());
+		assertEquals(ISBN_2, retrievedResource2.getIsbn());
+		assertEquals(DATE_2, retrievedResource2.getIntroductionDate());
+		assertEquals(false, retrievedResource2.getAssigned());
+		
+		assigningManager.assignResource(archiveId1, resourceId1);
+		
+		resource1.setId(resourceId1);
+		resource1.setName(NAME_3);
+		resource1.setAuthor(AUTHOR_2);
+		resource1.setIsbn(ISBN_3);
+		resource1.setIntroductionDate(DATE_2);
+		
+		resourceManager.updateResource(resource1);
+		int count1 = resourceManager.countResource(ISBN_1);
+		
+		resource2.setId(resourceId2);
+		resource2.setName(NAME_1);
+		resource2.setAuthor(AUTHOR_1);
+		resource2.setIsbn(ISBN_3);
+		resource2.setIntroductionDate(DATE_1);
+		
+		resourceManager.updateResource(resource2);
+		int count2 = resourceManager.countResource(ISBN_2);
+		
+		assertEquals(1, count1);
+		assertEquals(1, count2);
 	}
 }
