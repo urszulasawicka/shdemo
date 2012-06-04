@@ -42,6 +42,7 @@ public class ResourceManagerTest {
 	private final static String NAME_3 = "Odczyty staromodne";
 	private final static String AUTHOR_3 = "Kowalska";
 	private final static int ISBN_3 = 89;
+	private final static int ISBN_4 = 54;
 	
 	private final static String NAMEARCHIVE_1 = "Centrum";
 	private final static int TEAMNUMBERARCHIVE_1 = 189;
@@ -52,7 +53,7 @@ public class ResourceManagerTest {
 	private final static String PHONEARCHIVE_2 = "(78) 888-99-45";
 	private final static int TEAMNUMBERARCHIVE_3 = 100;
 
-	@Test
+	//@Test
 	public void addResourceCheck() {
 
 		Resource resource = new Resource();
@@ -72,7 +73,7 @@ public class ResourceManagerTest {
 		assertEquals(false, retrievedResource.getAssigned());
 	}
 	
-	@Test
+	//@Test
 	public void deleteResourceCheck() {
 
 		List<Resource> retrievedResources = resourceManager.getAllResources();
@@ -140,7 +141,7 @@ public class ResourceManagerTest {
 		assertEquals(0, count1);
 		assertEquals(0, count2);
 	}
-	//@Test
+	@Test
 	public void updateResourceCheck() {
 
 		List<Resource> retrievedResources = resourceManager.getAllResources();
@@ -220,11 +221,21 @@ public class ResourceManagerTest {
 		resource1.setId(resourceId1);
 		resource1.setName(NAME_3);
 		resource1.setAuthor(AUTHOR_2);
-		resource1.setIsbn(ISBN_3);
+		resource1.setIsbn(ISBN_4);
 		resource1.setIntroductionDate(DATE_2);
 		
-		resourceManager.updateResource(resource1);
-		int count1 = resourceManager.countResource(ISBN_1);
+		List<Archive> listArchive = archiveManager.getAllArchives();
+		Archive archiveOwner = resourceManager.deleteResourceFromList(listArchive, resourceId1);
+		if (archiveOwner != null){
+			resource1.setAssigned(true);
+			resourceManager.updateResource(resource1);
+			assigningManager.assignResource(archiveOwner.getId(), resourceId2);
+		}
+		else {
+			resource1.setAssigned(false);
+			resourceManager.updateResource(resource1);
+		}
+		int count1 = resourceManager.countResource(ISBN_2);
 		
 		resource2.setId(resourceId2);
 		resource2.setName(NAME_1);
@@ -232,8 +243,18 @@ public class ResourceManagerTest {
 		resource2.setIsbn(ISBN_3);
 		resource2.setIntroductionDate(DATE_1);
 		
-		resourceManager.updateResource(resource2);
-		int count2 = resourceManager.countResource(ISBN_2);
+		List<Archive> listArchive2 = archiveManager.getAllArchives();
+		Archive archiveOwner2 = resourceManager.deleteResourceFromList(listArchive2, resourceId2);
+		if (archiveOwner2 != null){
+			resource1.setAssigned(true);
+			resourceManager.updateResource(resource2);
+			assigningManager.assignResource(archiveOwner2.getId(), resourceId2);
+		}
+		else {
+			resource1.setAssigned(false);
+			resourceManager.updateResource(resource2);
+		}
+		int count2 = resourceManager.countResource(ISBN_3);
 		
 		assertEquals(1, count1);
 		assertEquals(1, count2);

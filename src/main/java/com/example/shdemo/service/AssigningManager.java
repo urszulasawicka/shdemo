@@ -48,7 +48,6 @@ public class AssigningManager {
 		resource = (Resource) sessionFactory.getCurrentSession()
 				.get(Resource.class, resource.getId());
 		Resource toDelete = null;
-		// lazy loading here (person.getCars)
 		for (Resource r : archive.getResources())
 			if (r.getId().compareTo(resource.getId()) == 0) {
 				toDelete = r;

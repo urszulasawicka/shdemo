@@ -54,6 +54,8 @@ public class ArchiveManager {
 	public Archive findArchiveByTeamNumber(int teamNumber) {
 		return (Archive) sessionFactory.getCurrentSession().getNamedQuery("archive.byTeamNumber").setInteger("teamNumber", teamNumber).uniqueResult();
 	}
+	
+	@SuppressWarnings("unchecked")
 	public int countArchive(int teamNumber) {
 		List<Archive> listArchiveBy = sessionFactory.getCurrentSession().getNamedQuery("archive.byTeamNumber").setInteger("teamNumber", teamNumber).list();
 		return listArchiveBy.size();
